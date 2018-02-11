@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
-import { Form, Button } from 'semantic-ui-react';
-import Validator from 'validator';
-import InlineError from '../messages/InlineError';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import _ from "lodash";
+import { Form, Button } from "semantic-ui-react";
+import Validator from "validator";
+import InlineError from "../messages/InlineError";
 
 class LoginForm extends Component {
   state = {
@@ -26,9 +26,9 @@ class LoginForm extends Component {
     if (_.isEmpty(errors)) {
       this.props.submit(this.state.data);
     }
-  }
+  };
 
-  validate = (data) => {
+  validate = data => {
     const errors = {};
     if (!Validator.isEmail(data.email)) {
       errors.email = "Invalid email";
@@ -37,7 +37,7 @@ class LoginForm extends Component {
       errors.password = "Can't be blank";
     }
     return errors;
-  }
+  };
 
   render() {
     const { data, errors } = this.state;
@@ -78,7 +78,7 @@ class LoginForm extends Component {
 }
 
 LoginForm.propTypes = {
-  submit: PropTypes.func.isRequired,
+  submit: PropTypes.func.isRequired
 };
 
 export default LoginForm;
