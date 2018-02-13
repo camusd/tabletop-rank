@@ -1,54 +1,57 @@
 package com.dylancamus.tabletoprank.web
 
-import com.dylancamus.tabletoprank.domain.user.UserEntity
-import com.dylancamus.tabletoprank.domain.user.UserRepository
-import io.restassured.RestAssured
-import io.restassured.RestAssured.`when`
-import org.junit.Before
+import com.dylancamus.tabletoprank.domain.user.UserDto
+import com.dylancamus.tabletoprank.service.user.UserService
+import com.jayway.restassured.module.mockmvc.RestAssuredMockMvc
 import org.junit.Test
 
-import org.junit.Assert.*
 import org.hamcrest.CoreMatchers.*
+import org.junit.Before
 import org.junit.runner.RunWith
+import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.embedded.LocalServerPort
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpStatus
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.junit4.SpringRunner
-import javax.transaction.Transactional
+import org.springframework.test.web.servlet.MockMvc
+import java.util.Arrays.asList
 
 @RunWith(SpringRunner::class)
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Transactional
-class UserEntityControllerTest {
-
-    @LocalServerPort
-    private var port: Int = 0
+@WebMvcTest(UserController::class)
+internal class UserControllerTest {
 
     @Autowired
-    private lateinit var repository: UserRepository
+    private lateinit var mockMvc: MockMvc
 
-    private var expectedUserEntity: UserEntity? = null
+    @MockBean
+    private lateinit var userService: UserService
 
     @Before
     fun setUp() {
-        RestAssured.port = port
-        expectedUserEntity = repository.save(UserEntity("Dylan", "Camus"))
-        repository.save(UserEntity("Jack", "Bauer"))
-        repository.save(UserEntity("Chloe", "O'Brian"))
-        repository.save(UserEntity("Kim", "Bauer"))
-        repository.save(UserEntity("David", "Palmer"))
-        repository.save(UserEntity("Michelle", "Dessler"))
+        RestAssuredMockMvc.mockMvc(mockMvc)
     }
 
     @Test
-    fun findAll() {
-        `when`().get("/api/user/").then().log().all().assertThat().body("size()", `is`(6))
+    fun `'getUsers' returns json array of expected size`() {
+        given(userService.getUsers()).willReturn(asList(
+                UserDto(1L, "apple", "banana"),
+                UserDto(2L, "pear", "mango")))
+        RestAssuredMockMvc
+                .given().auth().with(user("user").password("password"))
+                .`when`().get("/api/user").then()
+                .statusCode(HttpStatus.OK.value())
+                .assertThat().body("size()", `is`(2))
     }
 
     @Test
-    fun findById() {
-        val actualUserEntity: UserEntity? = repository.findById(expectedUserEntity?.id ?: 1L)
-        assertThat(actualUserEntity?.firstName, `is`(expectedUserEntity?.firstName))
-        assertThat(actualUserEntity?.lastName, `is`(expectedUserEntity?.lastName))
+    fun `'getUsers' returns empty json array`() {
+        given(userService.getUsers()).willReturn(emptyList())
+        RestAssuredMockMvc
+                .given().auth().with(user("user").password("password"))
+                .`when`().get("/api/user").then()
+                .statusCode(HttpStatus.OK.value())
+                .assertThat().body("size()", `is`(0))
     }
 }
