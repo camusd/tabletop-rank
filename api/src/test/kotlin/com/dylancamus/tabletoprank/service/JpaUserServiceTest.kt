@@ -15,6 +15,7 @@ import org.mockito.Matchers.any
 import org.mockito.Matchers.eq
 import org.mockito.Mockito.*
 import org.mockito.runners.MockitoJUnitRunner
+import javax.persistence.EntityNotFoundException
 
 @RunWith(MockitoJUnitRunner::class)
 internal class JpaUserServiceTest {
@@ -37,21 +38,24 @@ internal class JpaUserServiceTest {
     @Test
     fun `'getUsers' should return list of UserDtos if repository contains entities`() {
         `when`(mockUserRepository.findAll()).thenReturn(mutableListOf(
-                UserEntity(firstName = "apple", lastName = "banana"),
-                UserEntity(firstName = "pear", lastName = "mango")))
+                UserEntity(email = "pineapple", password = "strawberry",
+                        firstName = "apple", lastName = "banana"),
+                UserEntity(email = "blueberry", password = "watermelon",
+                        firstName = "pear", lastName = "mango")))
         assertThat(subject.getUsers().size, `is`(2))
     }
 
-    @Test
-    fun `'getUser' should return null if repository doesn't contain the entity`() {
+    @Test(expected = EntityNotFoundException::class)
+    fun `'getUser' should throw exception if repository doesn't contain the entity`() {
         `when`(mockUserRepository.findOne(anyLong())).thenReturn(null)
-        assertThat(subject.getUser(1L), `is`(nullValue()))
+        subject.getUser(1L)
     }
 
     @Test
     fun `'getUser' should return UserDto if repository contains the entity`() {
         val expectedId = 1L
-        val expectedUserEntity = UserEntity(expectedId, "apple", "pear")
+        val expectedUserEntity = UserEntity(expectedId, "apple",
+                "banana", "pear", "mango")
         `when`(mockUserRepository.findOne(eq(expectedId)))
                 .thenReturn(expectedUserEntity)
         assertThat(subject.getUser(expectedId), `is`(expectedUserEntity.toDto()))
@@ -59,9 +63,8 @@ internal class JpaUserServiceTest {
 
     @Test
     fun `'createUser' should persist the entity and return UserDto`() {
-        val expectedFirstName = "apple"
-        val expectedLastName = "banana"
-        val expectedCreateUserDto = CreateUserDto(expectedFirstName, expectedLastName)
+        val expectedCreateUserDto = CreateUserDto("apple",
+                "banana", "pear", "mango")
         `when`(mockUserRepository.save(any(UserEntity::class.java))).thenAnswer({
             it.getArgumentAt(0, UserEntity::class.java)
         })
@@ -73,11 +76,10 @@ internal class JpaUserServiceTest {
     @Test
     fun `'updateUser' should persist entity with updated properties and return UserDto`() {
         val expectedId = 1L
-        val expectedFirstName = "apple"
-        val expectedLastName = "banana"
-        val updatedLastName = "pear"
-        val expectedUpdateUserDto = UpdateUserDto(expectedFirstName, updatedLastName)
-        val expectedUserEntity = UserEntity(expectedId, expectedFirstName, expectedLastName)
+        val expectedUpdateUserDto = UpdateUserDto(null,
+                null, "pineapple", null)
+        val expectedUserEntity = UserEntity(expectedId, "apple",
+                "banana", "pear", "mango")
         `when`(mockUserRepository.findOne(eq(expectedId))).thenReturn(expectedUserEntity)
         `when`(mockUserRepository.save(any(UserEntity::class.java))).thenAnswer({
             it.getArgumentAt(0, UserEntity::class.java)
@@ -87,9 +89,10 @@ internal class JpaUserServiceTest {
         assertThat(actualUserDto, `is`(userEntityArgumentCaptor.value.toDto()))
     }
 
-    @Test
-    fun `'updateUser' should return null if repository does not contain entity with given id`() {
+    @Test(expected = EntityNotFoundException::class)
+    fun `'updateUser' should throw exception if repository does not contain entity with given id`() {
         `when`(mockUserRepository.findOne(anyLong())).thenReturn(null)
-        assertThat(subject.updateUser(1L, UpdateUserDto("apple", "banana")), `is`(nullValue()))
+        subject.updateUser(1L, UpdateUserDto(null,
+                null, "apple", "banana"))
     }
 }
