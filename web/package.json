@@ -36,5 +36,6 @@
     "eslint-plugin-react": "^7.6.1",
     "eslint-plugin-webdriverio": "^1.0.1",
     "prettier": "^1.10.2"
-  }
+  },
+  "proxy": "http://localhost:8080"
 }

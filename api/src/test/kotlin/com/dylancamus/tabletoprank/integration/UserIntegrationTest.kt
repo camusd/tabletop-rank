@@ -35,8 +35,6 @@ internal class UserIntegrationTest {
     @Before
     fun setUp() {
         RestAssured.port = port
-        users.add(UserEntity(email = "dylan.camus@test.com",
-                password = "password", firstName = "Dylan", lastName = "Camus"))
         users.add(UserEntity(email = "jack.bauer@test.com",
                 password = "password", firstName = "Jack", lastName = "Bauer"))
         users.add(UserEntity(email = "chloe.obrian@test.com",
@@ -60,7 +58,7 @@ internal class UserIntegrationTest {
         given().auth().basic("user", "password")
                 .`when`().get("/api/user/").then()
                 .statusCode(HttpStatus.OK.value())
-                .assertThat().body("size()", `is`(6))
+                .assertThat().body("size()", `is`(users.size))
     }
 
     @Test

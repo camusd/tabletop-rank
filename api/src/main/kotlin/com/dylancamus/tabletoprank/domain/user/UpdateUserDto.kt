@@ -1,4 +1,6 @@
 package com.dylancamus.tabletoprank.domain.user
 
-data class UpdateUserDto(val email: String?, val password: String?,
+import org.hibernate.validator.constraints.Email
+
+data class UpdateUserDto(@Email val email: String?, val password: String?,
                          val firstName: String?, val lastName: String?)

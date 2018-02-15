@@ -1,5 +1,6 @@
 package com.dylancamus.tabletoprank.domain.user
 
+import org.hibernate.validator.constraints.Email
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -7,12 +8,12 @@ import javax.persistence.Id
 
 @Entity
 internal data class UserEntity(
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+        @Id @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long = 0,
-    val email: String,
-    val password: String,
-    val firstName: String,
-    val lastName: String) {
+        @Email val email: String,
+        val password: String,
+        val firstName: String,
+        val lastName: String) {
 
     fun toDto(): UserDto = UserDto(
             id = this.id,

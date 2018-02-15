@@ -10,18 +10,14 @@ import javax.transaction.Transactional
 @Transactional
 internal class JpaUserService(val userRepository: UserRepository) : UserService {
 
-    override fun getUser(userId: Long): UserDto? {
+    override fun getUser(userId: Long): UserDto {
         return userRepository.findOne(userId)?.toDto()
                 ?: throw EntityNotFoundException("User with id: $userId not found")
     }
 
-    override fun getUsers(): List<UserDto> {
-        return userRepository.findAll().map { it.toDto() }
-    }
+    override fun getUsers() = userRepository.findAll().map { it.toDto() }
 
-    override fun createUser(user: CreateUserDto): UserDto {
-        return userRepository.save(UserEntity.fromDto(user)).toDto()
-    }
+    override fun createUser(user: CreateUserDto) = userRepository.save(UserEntity.fromDto(user)).toDto()
 
     override fun updateUser(userId: Long, user: UpdateUserDto): UserDto {
         val currentUser = userRepository.findOne(userId)

@@ -1,4 +1,6 @@
 package com.dylancamus.tabletoprank.domain.user
 
-data class CreateUserDto(val email: String, val password: String,
+import org.hibernate.validator.constraints.Email
+
+data class CreateUserDto(@Email val email: String, val password: String,
                          val firstName: String, val lastName: String)

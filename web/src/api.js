@@ -1,8 +1,18 @@
 import axios from "axios";
 
+const auth = {
+  username: "user",
+  password: "password"
+};
+
 export default {
   user: {
     login: credentials =>
-      axios.post("/api/auth", { credentials }).then(res => res.data.user)
+      axios({
+        method: "post",
+        url: "api/auth",
+        data: credentials,
+        auth
+      }).then(res => res.data)
   }
 };
