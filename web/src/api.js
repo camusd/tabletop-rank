@@ -1,18 +1,18 @@
 import axios from "axios";
 
-const auth = {
-  username: "user",
-  password: "password"
-};
+if (localStorage.tabletoprankJWT) {
+  axios.defaults.headers.authorization = `Bearer ${
+    localStorage.tabletoprankJWT
+  }`;
+}
 
 export default {
   user: {
     login: credentials =>
-      axios({
-        method: "post",
-        url: "api/auth",
-        data: credentials,
-        auth
-      }).then(res => res.data)
+      axios.post("/login", credentials).then(res => {
+        axios.defaults.headers.authorization = res.headers.authorization;
+        return res;
+      }),
+    getDetail: () => axios.get("/api/user").then(res => res.data)
   }
 };

@@ -9,11 +9,16 @@ import "semantic-ui-css/semantic.min.css";
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 import rootReducer from "./rootReducer";
+import { getUser } from "./actions/auth";
 
 const store = createStore(
   rootReducer,
   composeWithDevTools(applyMiddleware(thunk))
 );
+
+if (localStorage.tabletoprankJWT) {
+  store.dispatch(getUser(localStorage.tabletoprankJWT));
+}
 
 ReactDOM.render(
   <BrowserRouter>

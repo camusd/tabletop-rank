@@ -1,12 +1,13 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
-const HomePage = ({ user }) => (
+const HomePage = ({ isAuthenticated }) => (
   <div>
     <h1>Home Page</h1>
-    {user.id ? (
-      <span>Welcome {user.firstName}!</span>
+    {isAuthenticated ? (
+      <button>Logout</button>
     ) : (
       <Link to="/login" href="/login">
         Login
@@ -15,8 +16,12 @@ const HomePage = ({ user }) => (
   </div>
 );
 
+HomePage.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired
+};
+
 const mapStateToProps = state => ({
-  user: state.user
+  isAuthenticated: !!state.user.token
 });
 
 export default connect(mapStateToProps)(HomePage);

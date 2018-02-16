@@ -10,5 +10,5 @@ import javax.transaction.Transactional
 @Transactional
 internal interface UserRepository : JpaRepository<UserEntity, Long> {
 
-    fun findByEmail(@Email email: String): UserEntity
+    fun findByEmail(@Email email: String): UserEntity?
 }

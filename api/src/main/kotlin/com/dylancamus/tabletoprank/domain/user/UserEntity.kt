@@ -1,16 +1,13 @@
 package com.dylancamus.tabletoprank.domain.user
 
 import org.hibernate.validator.constraints.Email
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
 @Entity
+@Table(indexes = [Index(name = "IDX_EMAIL", columnList = "email")])
 internal data class UserEntity(
-        @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long = 0,
-        @Email val email: String,
+        @Id @GeneratedValue(strategy = GenerationType.AUTO) val id: Long = 0,
+        @Email @Column(unique = true) val email: String,
         val password: String,
         val firstName: String,
         val lastName: String) {

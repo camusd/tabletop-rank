@@ -1,6 +1,5 @@
 package com.dylancamus.tabletoprank.util
 
-import com.dylancamus.tabletoprank.util.ApiError
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
