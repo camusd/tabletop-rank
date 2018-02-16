@@ -1,4 +1,4 @@
-package com.dylancamus.tabletoprank.service.user
+package com.dylancamus.tabletoprank.service.authorization
 
 import com.dylancamus.tabletoprank.domain.user.AuthorizationDto
 import com.dylancamus.tabletoprank.domain.user.UserDto

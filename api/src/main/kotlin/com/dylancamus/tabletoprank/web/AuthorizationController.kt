@@ -1,7 +1,7 @@
 package com.dylancamus.tabletoprank.web
 
 import com.dylancamus.tabletoprank.domain.user.AuthorizationDto
-import com.dylancamus.tabletoprank.service.user.AuthorizationService
+import com.dylancamus.tabletoprank.service.authorization.AuthorizationService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
