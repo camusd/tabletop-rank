@@ -1,5 +1,7 @@
 package com.dylancamus.tabletoprank.integration
 
+import com.dylancamus.tabletoprank.H2TestProfileJPAConfig
+import com.dylancamus.tabletoprank.TabletopRankApplication
 import com.dylancamus.tabletoprank.domain.user.*
 import com.dylancamus.tabletoprank.repository.UserRepository
 import com.dylancamus.tabletoprank.service.user.UserService
@@ -18,10 +20,15 @@ import org.springframework.boot.context.embedded.LocalServerPort
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [
+    TabletopRankApplication::class,
+    H2TestProfileJPAConfig::class
+])
+@ActiveProfiles("test")
 internal class UserIntegrationTest {
 
     @LocalServerPort
