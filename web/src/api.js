@@ -13,6 +13,9 @@ export default {
         axios.defaults.headers.authorization = res.headers.authorization;
         return res;
       }),
+    logout: () => {
+      delete axios.defaults.headers.authorization;
+    },
     getDetail: () => axios.get("/api/user").then(res => res.data)
   }
 };

@@ -1,14 +1,18 @@
-import { USER_LOGGED_IN, TOKEN_STORED } from "../types";
+import { USER_LOGGED_IN, TOKEN_STORED, USER_LOGGED_OUT } from "../types";
 import api from "../api";
+
+export const tokenStored = token => ({
+  type: TOKEN_STORED,
+  token
+});
 
 export const userLoggedIn = user => ({
   type: USER_LOGGED_IN,
   user
 });
 
-export const tokenStored = token => ({
-  type: TOKEN_STORED,
-  token
+export const userLoggedOut = () => ({
+  type: USER_LOGGED_OUT
 });
 
 export const getUser = token => dispatch => {
@@ -25,3 +29,9 @@ export const login = credentials => dispatch =>
       return token;
     })
     .then(token => dispatch(getUser(token)));
+
+export const logout = () => dispatch => {
+  api.user.logout();
+  localStorage.removeItem("tabletoprankJWT");
+  dispatch(userLoggedOut());
+};
