@@ -16,6 +16,7 @@ export default {
     logout: () => {
       delete axios.defaults.headers.authorization;
     },
+    signup: user => axios.post("/api/user", user).then(res => res.data),
     getDetail: () => axios.get("/api/user").then(res => res.data)
   }
 };

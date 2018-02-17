@@ -2,6 +2,8 @@ package com.dylancamus.tabletoprank.service.user
 
 import com.dylancamus.tabletoprank.domain.user.*
 import com.dylancamus.tabletoprank.repository.UserRepository
+import com.dylancamus.tabletoprank.util.RestException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
@@ -21,8 +23,12 @@ internal class JpaUserService(val userRepository: UserRepository,
     }
 
     override fun createUser(user: CreateUserDto): UserDto {
-        val userEncrypted = user.copy(password = bCryptPasswordEncoder.encode(user.password))
-        return userRepository.save(UserEntity.fromDto(userEncrypted)).toDto()
+        try {
+            val userEncrypted = user.copy(password = bCryptPasswordEncoder.encode(user.password))
+            return userRepository.save(UserEntity.fromDto(userEncrypted)).toDto()
+        } catch (ex: DataIntegrityViolationException) {
+            throw RestException("Validation error", "${user.email} already exists")
+        }
     }
 
     override fun updateUser(user: UpdateUserDto): UserDto {

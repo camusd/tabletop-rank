@@ -5,9 +5,11 @@ import { Form, Button, Message } from "semantic-ui-react";
 import isEmail from "validator/lib/isEmail";
 import InlineError from "../messages/InlineError";
 
-class LoginForm extends Component {
+class SignupForm extends Component {
   state = {
     data: {
+      firstName: "",
+      lastName: "",
       email: "",
       password: ""
     },
@@ -15,12 +17,8 @@ class LoginForm extends Component {
     errors: {}
   };
 
-  onChange = e =>
-    this.setState({
-      data: { ...this.state.data, [e.target.name]: e.target.value }
-    });
-
-  onSubmit = () => {
+  onSubmit = e => {
+    e.preventDefault();
     const errors = this.validate(this.state.data);
     this.setState({ errors });
     if (_.isEmpty(errors)) {
@@ -33,27 +31,62 @@ class LoginForm extends Component {
     }
   };
 
+  onChange = e =>
+    this.setState({
+      data: { ...this.state.data, [e.target.name]: e.target.value }
+    });
+
   validate = data => {
     const errors = {};
+    if (!data.firstName) {
+      errors.firstName = "Field is required";
+    }
+    if (!data.lastName) {
+      errors.lastName = "Field is requried";
+    }
     if (!isEmail(data.email)) {
       errors.email = "Invalid email";
     }
     if (!data.password) {
-      errors.password = "Password is required";
+      errors.password = "Field is required";
     }
     return errors;
   };
 
   render() {
-    const { data, errors, loading } = this.state;
+    const { data, loading, errors } = this.state;
+    const emailExists =
+      errors.subErrors &&
+      _.find(errors.subErrors, error => error.obj === "email");
+
     return (
       <Form onSubmit={this.onSubmit} loading={loading}>
-        {errors.message && (
-          <Message negative>
-            <Message.Header>Something went wrong</Message.Header>
-            <p>{errors.message}</p>
-          </Message>
-        )}
+        <Form.Field error={!!errors.firstName}>
+          <label htmlFor="firstName">
+            First Name
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              value={data.firstName}
+              onChange={this.onChange}
+            />
+          </label>
+          {errors.firstName && <InlineError text={errors.firstName} />}
+        </Form.Field>
+        <Form.Field error={!!errors.lastName}>
+          <label htmlFor="lastName">
+            Last Name
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              value={data.lastName}
+              onChange={this.onChange}
+            />
+          </label>
+          {errors.lastName && <InlineError text={errors.lastName} />}
+        </Form.Field>
         <Form.Field error={!!errors.email}>
           <label htmlFor="email">
             Email
@@ -66,6 +99,7 @@ class LoginForm extends Component {
               onChange={this.onChange}
             />
           </label>
+          {emailExists && <InlineError text={emailExists.message} />}
           {errors.email && <InlineError text={errors.email} />}
         </Form.Field>
         <Form.Field error={!!errors.password}>
@@ -81,14 +115,14 @@ class LoginForm extends Component {
           </label>
           {errors.password && <InlineError text={errors.password} />}
         </Form.Field>
-        <Button primary>Login</Button>
+        <Button primary>Sign Up</Button>
       </Form>
     );
   }
 }
 
-LoginForm.propTypes = {
+SignupForm.propTypes = {
   submit: PropTypes.func.isRequired
 };
 
-export default LoginForm;
+export default SignupForm;

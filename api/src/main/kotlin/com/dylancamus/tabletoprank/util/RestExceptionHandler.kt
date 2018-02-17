@@ -16,6 +16,14 @@ import javax.persistence.EntityNotFoundException
 @ControllerAdvice
 class RestExceptionHandler : ResponseEntityExceptionHandler() {
 
+    @ExceptionHandler(RestException::class)
+    protected fun handleRestException(ex: RestException): ResponseEntity<Any> {
+        return ResponseEntity(ApiError(status = HttpStatus.BAD_REQUEST,
+                message = ex.localizedMessage, subErrors = ex.args.map {
+            ApiValidationError("email", it.toString())
+        }), HttpStatus.BAD_REQUEST)
+    }
+
     override fun handleHttpMessageNotReadable(ex: HttpMessageNotReadableException,
                                               headers: HttpHeaders, status: HttpStatus,
                                               request: WebRequest): ResponseEntity<Any> {
@@ -26,6 +34,8 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(EntityNotFoundException::class)
     protected fun handleEntityNotFound(ex: EntityNotFoundException): ResponseEntity<Any> {
-        return ResponseEntity(ApiError(status = HttpStatus.NOT_FOUND, message = ex.localizedMessage), HttpStatus.NOT_FOUND)
+        return ResponseEntity(ApiError(status = HttpStatus.NOT_FOUND,
+                message = ex.localizedMessage), HttpStatus.NOT_FOUND)
     }
+
 }
