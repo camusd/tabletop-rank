@@ -1,6 +1,5 @@
 package com.dylancamus.tabletoprank
 
-import org.apache.tomcat.jni.SSL.setPassword
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -21,13 +20,9 @@ internal class H2TestProfileJPAConfig {
         val dataSource = DriverManagerDataSource()
         dataSource.setDriverClassName("org.h2.Driver")
         dataSource.url = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1"
-        dataSource.username = "sa"
-        dataSource.password = "sa"
+        dataSource.username = "it"
+        dataSource.password = "it"
 
         return dataSource
     }
-
-    // configure entityManagerFactory
-    // configure transactionManager
-    // configure additional Hibernate properties
 }
