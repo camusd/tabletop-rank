@@ -88,7 +88,7 @@ internal class JpaUserServiceTest {
     @Test
     fun `'updateUser' should persist entity with updated properties and return UserDto`() {
         val expectedUpdateUserDto = UpdateUserDto(null,
-                null, "pineapple", null)
+                null, "pineapple", null, null)
         val expectedUserEntity = UserEntity(1L, "apple",
                 "banana", "pear", "mango")
         whenever(mockUserRepository.findByEmail(expectedEmail)).thenReturn(expectedUserEntity)
@@ -104,6 +104,6 @@ internal class JpaUserServiceTest {
     fun `'updateUser' should throw exception if repository does not contain entity with given id`() {
         whenever(mockUserRepository.findOne(anyLong())).thenReturn(null)
         subject.updateUser(UpdateUserDto(null,
-                null, "apple", "banana"))
+                null, "apple", "banana", null))
     }
 }

@@ -35,7 +35,9 @@ internal class JpaUserService(val userRepository: UserRepository,
         val authentication = SecurityContextHolder.getContext().authentication
         val email = authentication.principal.toString()
         val currentUser = userRepository.findByEmail(email)
-        return if (currentUser != null) userRepository.save(UserEntity.fromDto(user, currentUser)).toDto()
+        val encryptedPassword = if (user.password != null) bCryptPasswordEncoder.encode(user.password) else null
+        return if (currentUser != null) userRepository
+                .save(UserEntity.fromDto(user.copy(password = encryptedPassword), currentUser)).toDto()
         else throw EntityNotFoundException("User with email: $email not found")
     }
 }

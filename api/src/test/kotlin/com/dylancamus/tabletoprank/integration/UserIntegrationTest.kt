@@ -124,7 +124,7 @@ internal class UserIntegrationTest {
     @Test
     fun `'updateUser' should return updated user`() {
         val user = users[0]
-        val dto = UpdateUserDto(null, null, null,"banana")
+        val dto = UpdateUserDto(null, null, null,"banana", null)
         given().header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(ContentType.JSON).body(dto)
                 .put("/api/user").then()
@@ -137,7 +137,7 @@ internal class UserIntegrationTest {
     @Test
     fun `'updateUser' should format error if user doesn't exist`() {
         userRepository.delete(users[0].id)
-        val dto = UpdateUserDto("apple", null, null, null)
+        val dto = UpdateUserDto("apple", null, null, null, null)
         given().header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(ContentType.JSON).body(dto)
                 .put("/api/user").then()

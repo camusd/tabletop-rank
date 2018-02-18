@@ -4,19 +4,20 @@ import org.hibernate.validator.constraints.Email
 import javax.persistence.*
 
 @Entity
-@Table(indexes = [Index(name = "IDX_EMAIL", columnList = "email")])
 internal data class UserEntity(
         @Id @GeneratedValue(strategy = GenerationType.AUTO) val id: Long = 0,
         @Email @Column(unique = true) val email: String,
         val password: String,
         val firstName: String,
-        val lastName: String) {
+        val lastName: String,
+        val confirmed: Boolean = false) {
 
     fun toDto(): UserDto = UserDto(
             id = this.id,
             email = this.email,
             firstName = this.firstName,
-            lastName = this.lastName)
+            lastName = this.lastName,
+            confirmed = this.confirmed)
 
     companion object {
 
@@ -31,6 +32,7 @@ internal data class UserEntity(
                 email = dto.email ?: user.email,
                 password = dto.password ?: user.password,
                 firstName = dto.firstName ?: user.firstName,
-                lastName = dto.lastName ?: user.lastName)
+                lastName = dto.lastName ?: user.lastName,
+                confirmed = dto.confirmed ?: user.confirmed)
     }
 }
