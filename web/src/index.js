@@ -10,7 +10,8 @@ import "semantic-ui-css/semantic.min.css";
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 import rootReducer from "./rootReducer";
-import { tokenMiddleware } from "./middleware/tokenMiddleware";
+import tokenMiddleware from "./middleware/tokenMiddleware";
+import { getUser } from "./actions/user";
 
 const defaultState = {};
 const token = localStorage.getItem("tabletoprankJWT");
@@ -24,12 +25,20 @@ const store = createStore(
   composeWithDevTools(middlewares)
 );
 
-ReactDOM.render(
-  <BrowserRouter>
-    <Provider store={store}>
-      <Route component={App} />
-    </Provider>
-  </BrowserRouter>,
-  document.getElementById("root")
-);
-registerServiceWorker();
+const init = () => {
+  ReactDOM.render(
+    <BrowserRouter>
+      <Provider store={store}>
+        <Route component={App} />
+      </Provider>
+    </BrowserRouter>,
+    document.getElementById("root")
+  );
+  registerServiceWorker();
+};
+
+if (token) {
+  store.dispatch(getUser()).then(init);
+} else {
+  init();
+}

@@ -1,6 +1,6 @@
-import { getUser } from "../actions/auth";
+import { getUser } from "../actions/user";
 
-export const tokenMiddleware = store => next => action => {
+export default store => next => action => {
   const previousToken = store.getState().user.token;
   next(action);
   const nextToken = store.getState().user.token;
@@ -9,5 +9,3 @@ export const tokenMiddleware = store => next => action => {
     store.dispatch(getUser());
   }
 };
-
-export default tokenMiddleware;
