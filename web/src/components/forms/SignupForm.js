@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import _ from "lodash";
+import _ from "lodash/fp";
 import { Form, Button } from "semantic-ui-react";
 import isEmail from "validator/lib/isEmail";
 import InlineError from "../messages/InlineError";
