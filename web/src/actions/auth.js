@@ -1,5 +1,5 @@
+import _ from "lodash/fp";
 import { USER_LOGGED_IN, TOKEN_STORED, USER_LOGGED_OUT } from "../types";
-import { getUser } from "./user";
 import api from "../api";
 
 export const tokenStored = token => ({
@@ -16,14 +16,12 @@ export const userLoggedOut = () => ({
   type: USER_LOGGED_OUT
 });
 
-export const login = credentials => dispatch =>
-  api.user
-    .login(credentials)
-    .then(res => {
-      const token = res.headers.authorization.split(" ")[1];
-      dispatch(tokenStored(token));
-    })
-    .then(() => dispatch(getUser()));
+export const login = credentials => async dispatch => {
+  const response = await api.user.login(credentials);
+  const { headers: { authorization } } = response;
+  const token = _.last(_.split(" ", authorization));
+  dispatch(tokenStored(token));
+};
 
 export const logout = () => dispatch => {
   api.user.logout();

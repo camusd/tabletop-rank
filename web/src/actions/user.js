@@ -1,8 +1,12 @@
 import { userLoggedIn } from "./auth";
 import api from "../api";
 
-export const getUser = () => dispatch =>
-  api.user.getDetail().then(user => dispatch(userLoggedIn(user)));
+export const getUser = () => async dispatch => {
+  const user = await api.user.getDetail();
+  return dispatch(userLoggedIn(user));
+};
 
-export const signup = data => dispatch =>
-  api.user.signup(data).then(user => dispatch(userLoggedIn(user)));
+export const signup = data => async dispatch => {
+  const user = await api.user.signup(data);
+  return dispatch(userLoggedIn(user));
+};
