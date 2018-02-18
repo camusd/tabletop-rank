@@ -15,8 +15,7 @@ export const userLoggedOut = () => ({
   type: USER_LOGGED_OUT
 });
 
-export const getUser = token => dispatch => {
-  dispatch(tokenStored(token));
+export const getUser = () => dispatch => {
   api.user.getDetail().then(user => dispatch(userLoggedIn(user)));
 };
 
@@ -25,10 +24,9 @@ export const login = credentials => dispatch =>
     .login(credentials)
     .then(res => {
       const token = res.headers.authorization.split(" ")[1];
-      localStorage.tabletoprankJWT = token;
-      return token;
+      dispatch(tokenStored(token));
     })
-    .then(token => dispatch(getUser(token)));
+    .then(() => dispatch(getUser()));
 
 export const logout = () => dispatch => {
   api.user.logout();
