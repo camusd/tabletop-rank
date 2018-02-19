@@ -8,7 +8,11 @@ const DashboardPage = ({ isConfirmed }) => (
 );
 
 DashboardPage.propTypes = {
-  isConfirmed: PropTypes.bool.isRequired
+  isConfirmed: PropTypes.bool
+};
+
+DashboardPage.defaultProps = {
+  isConfirmed: true
 };
 
 const mapStateToProps = state => ({
