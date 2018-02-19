@@ -1,30 +1,39 @@
-import _ from "lodash/fp";
-import { USER_LOGGED_IN, TOKEN_STORED, USER_LOGGED_OUT } from "../types";
-import api from "../api";
+import {
+  USER_LOGGED_IN,
+  USER_LOGIN_FAILED,
+  TOKEN_STORED,
+  USER_LOGGED_OUT,
+  CALL_API
+} from "../types";
 
 export const tokenStored = token => ({
   type: TOKEN_STORED,
   token
 });
 
-export const userLoggedIn = user => ({
-  type: USER_LOGGED_IN,
-  user
+export const userLoggedIn = () => ({
+  type: USER_LOGGED_IN
 });
 
+export const userLoginFailed = error => ({
+  type: USER_LOGIN_FAILED,
+  error
+});
 export const userLoggedOut = () => ({
   type: USER_LOGGED_OUT
 });
 
-export const login = credentials => async dispatch => {
-  const response = await api.user.login(credentials);
-  const { headers: { authorization } } = response;
-  const token = _.last(_.split(" ", authorization));
-  dispatch(tokenStored(token));
-};
+export const login = credentials => async dispatch =>
+  dispatch({
+    type: CALL_API,
+    url: "/login",
+    method: "post",
+    data: credentials,
+    onSuccess: userLoggedIn,
+    onError: userLoginFailed
+  });
 
 export const logout = () => dispatch => {
-  api.user.logout();
   localStorage.removeItem("tabletoprankJWT");
   dispatch(userLoggedOut());
 };
