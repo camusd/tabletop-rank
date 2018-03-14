@@ -1,16 +1,10 @@
 import React from "react";
-import {
-  connect
-} from "react-redux";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import {
-  logout
-} from "../../actions/auth";
+import { userLogoutAttempted } from "../../actions/auth";
 
-const LogoutButton = props => ( <
-  button onClick = {
-    () => props.logout()
-  } > Logout < /button>
+const LogoutButton = ({ logout }) => (
+  <button onClick={() => logout()}> Logout </button>
 );
 
 LogoutButton.propTypes = {
@@ -18,5 +12,5 @@ LogoutButton.propTypes = {
 };
 
 export default connect(null, {
-  logout
+  logout: userLogoutAttempted
 })(LogoutButton);

@@ -13,21 +13,17 @@ class SignupForm extends Component {
       email: "",
       password: ""
     },
-    loading: false,
-    errors: {}
+    formErrors: {}
   };
 
   onSubmit = e => {
     e.preventDefault();
-    const errors = this.validate(this.state.data);
-    this.setState({ errors });
-    if (_.isEmpty(errors)) {
-      this.setState({ loading: true });
-      this.props
-        .submit(this.state.data)
-        .catch(err =>
-          this.setState({ errors: err.response.data, loading: false })
-        );
+    const { submit } = this.props;
+    const { data } = this.state;
+    const formErrors = this.validate(data);
+    this.setState({ formErrors });
+    if (_.isEmpty(formErrors)) {
+      submit(data);
     }
   };
 
@@ -37,31 +33,30 @@ class SignupForm extends Component {
     });
 
   validate = data => {
-    const errors = {};
+    const formErrors = {};
     if (!data.firstName) {
-      errors.firstName = "Field is required";
+      formErrors.firstName = "Field is required";
     }
     if (!data.lastName) {
-      errors.lastName = "Field is requried";
+      formErrors.lastName = "Field is requried";
     }
     if (!isEmail(data.email)) {
-      errors.email = "Invalid email";
+      formErrors.email = "Invalid email";
     }
     if (!data.password) {
-      errors.password = "Field is required";
+      formErrors.password = "Field is required";
     }
-    return errors;
+    return formErrors;
   };
 
   render() {
-    const { data, loading, errors } = this.state;
+    const { error, loading } = this.props;
+    const { data, formErrors } = this.state;
     const emailExists =
-      errors.subErrors &&
-      _.find(errors.subErrors, error => error.obj === "email");
-
+      error.subErrors && _.find(err => err.obj === "email", error.subErrors);
     return (
       <Form onSubmit={this.onSubmit} loading={loading}>
-        <Form.Field error={!!errors.firstName}>
+        <Form.Field error={!!formErrors.firstName}>
           <label htmlFor="firstName">
             First Name
             <input
@@ -72,9 +67,9 @@ class SignupForm extends Component {
               onChange={this.onChange}
             />
           </label>
-          {errors.firstName && <InlineError text={errors.firstName} />}
+          {formErrors.firstName && <InlineError text={formErrors.firstName} />}
         </Form.Field>
-        <Form.Field error={!!errors.lastName}>
+        <Form.Field error={!!formErrors.lastName}>
           <label htmlFor="lastName">
             Last Name
             <input
@@ -85,9 +80,9 @@ class SignupForm extends Component {
               onChange={this.onChange}
             />
           </label>
-          {errors.lastName && <InlineError text={errors.lastName} />}
+          {formErrors.lastName && <InlineError text={formErrors.lastName} />}
         </Form.Field>
-        <Form.Field error={!!errors.email}>
+        <Form.Field error={!!formErrors.email}>
           <label htmlFor="email">
             Email
             <input
@@ -100,9 +95,9 @@ class SignupForm extends Component {
             />
           </label>
           {emailExists && <InlineError text={emailExists.message} />}
-          {errors.email && <InlineError text={errors.email} />}
+          {formErrors.email && <InlineError text={formErrors.email} />}
         </Form.Field>
-        <Form.Field error={!!errors.password}>
+        <Form.Field error={!!formErrors.password}>
           <label htmlFor="password">
             Password
             <input
@@ -113,7 +108,7 @@ class SignupForm extends Component {
               onChange={this.onChange}
             />
           </label>
-          {errors.password && <InlineError text={errors.password} />}
+          {formErrors.password && <InlineError text={formErrors.password} />}
         </Form.Field>
         <Button primary>Sign Up</Button>
       </Form>
@@ -122,7 +117,21 @@ class SignupForm extends Component {
 }
 
 SignupForm.propTypes = {
-  submit: PropTypes.func.isRequired
+  submit: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.shape({
+    message: PropTypes.string,
+    subErrors: PropTypes.arrayOf(
+      PropTypes.shape({
+        obj: PropTypes.string.isRequired,
+        message: PropTypes.string.isRequired
+      })
+    )
+  })
+};
+
+SignupForm.defaultProps = {
+  error: {}
 };
 
 export default SignupForm;

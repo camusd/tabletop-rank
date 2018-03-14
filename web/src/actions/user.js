@@ -1,46 +1,38 @@
 import {
-  CALL_API,
-  USER_DATA_FETCHED,
-  USER_DATA_FETCH_FAILED,
+  USER_DATA_REQUESTED,
+  USER_DATA_RETRIEVED,
+  USER_DATA_RETRIEVAL_FAILED,
   USER_CREATION_FAILED,
-  USER_CREATED
+  USER_CREATED,
+  USER_CREATION_INITIATED
 } from "../types";
 
-export const userDataFetched = user => ({
-  type: USER_DATA_FETCHED,
+export const userDataRequested = () => ({
+  type: USER_DATA_REQUESTED
+});
+
+export const userDataRetrieved = ({ user }) => ({
+  type: USER_DATA_RETRIEVED,
   user
 });
 
-export const userDataFetchFailed = error => ({
-  type: USER_DATA_FETCH_FAILED,
+export const userDataRetrievalFailed = ({ error }) => ({
+  type: USER_DATA_RETRIEVAL_FAILED,
   error
 });
 
-export const userCreated = user => ({
+export const userCreationInitiated = ({ data, redirect }) => ({
+  type: USER_CREATION_INITIATED,
+  data,
+  redirect
+});
+
+export const userCreated = ({ user }) => ({
   type: USER_CREATED,
   user
 });
 
-export const userCreationFailed = error => ({
+export const userCreationFailed = ({ error }) => ({
   type: USER_CREATION_FAILED,
   error
 });
-
-export const signup = data => async dispatch =>
-  dispatch({
-    type: CALL_API,
-    url: "/api/user",
-    method: "post",
-    data,
-    onSuccess: userCreated,
-    onError: userCreationFailed
-  });
-
-export const getUser = () => async dispatch =>
-  dispatch({
-    type: CALL_API,
-    url: "/api/user",
-    method: "get",
-    onSuccess: userDataFetched,
-    onError: userDataFetchFailed
-  });

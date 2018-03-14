@@ -1,33 +1,49 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import SignupForm from "../forms/SignupForm";
-import { signup } from "../../actions/user";
-import { login } from "../../actions/auth";
+import { userCreationInitiated } from "../../actions/user";
+import { userErrorSelector, loadingSelector } from "../../selectors";
 
-class SignupPage extends Component {
-  submit = async data => {
-    const { email, password } = data;
-    await this.props.signup(data);
-    await this.props.login({ email, password });
-    this.props.history.push("/dashboard");
+const SignupPage = ({ signup, history, error, loading }) => {
+  const submit = data => {
+    const redirect = () => history.push("/dashboard");
+    signup({ data, redirect });
   };
 
-  render() {
-    return (
-      <div>
-        <SignupForm submit={this.submit} />
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <SignupForm submit={submit} error={error} loading={loading} />
+    </div>
+  );
+};
 
 SignupPage.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired
   }).isRequired,
   signup: PropTypes.func.isRequired,
-  login: PropTypes.func.isRequired
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.shape({
+    message: PropTypes.string,
+    subErrors: PropTypes.arrayOf(
+      PropTypes.shape({
+        obj: PropTypes.string.isRequired,
+        message: PropTypes.string.isRequired
+      })
+    )
+  })
 };
 
-export default connect(null, { signup, login })(SignupPage);
+SignupPage.defaultProps = {
+  error: {}
+};
+
+const mapStateToProps = state => ({
+  error: userErrorSelector(state),
+  loading: loadingSelector(state)
+});
+
+export default connect(mapStateToProps, {
+  signup: userCreationInitiated
+})(SignupPage);

@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Route, Redirect } from "react-router-dom";
+import { isAuthenticatedSelector } from "../../selectors";
 
 const GuestRoute = ({ isAuthenticated, component: Component, ...rest }) => (
   <Route
@@ -18,7 +19,7 @@ GuestRoute.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  isAuthenticated: !!(state.user.token && state.user.email)
+  isAuthenticated: isAuthenticatedSelector(state)
 });
 
 export default connect(mapStateToProps)(GuestRoute);

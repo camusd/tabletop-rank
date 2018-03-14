@@ -2,7 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import * as auth from "../../actions/auth";
+import { userLogoutAttempted } from "../../actions/auth";
+import { isAuthenticatedSelector } from "../../selectors";
 
 const HomePage = ({ isAuthenticated, logout }) => (
   <div>
@@ -29,7 +30,9 @@ HomePage.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  isAuthenticated: !!state.user.token
+  isAuthenticated: isAuthenticatedSelector(state)
 });
 
-export default connect(mapStateToProps, { logout: auth.logout })(HomePage);
+export default connect(mapStateToProps, { logout: userLogoutAttempted })(
+  HomePage
+);

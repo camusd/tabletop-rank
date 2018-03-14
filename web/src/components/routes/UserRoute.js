@@ -2,12 +2,16 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Route, Redirect } from "react-router-dom";
-import { getUser } from "../../actions/user";
+import { userDataRequested } from "../../actions/user";
+import {
+  isAuthenticatedSelector,
+  isUserDataFetchedSelector
+} from "../../selectors";
 
 class UserRoute extends React.Component {
   async componentDidMount() {
-    const { isAuthenticated, userDataFetched } = this.props;
-    if (isAuthenticated && !userDataFetched) {
+    const { isAuthenticated, isUserDataFetched } = this.props;
+    if (isAuthenticated && !isUserDataFetched) {
       await this.props.getUser();
     }
   }
@@ -28,13 +32,15 @@ class UserRoute extends React.Component {
 UserRoute.propTypes = {
   component: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
-  userDataFetched: PropTypes.bool.isRequired,
+  isUserDataFetched: PropTypes.bool.isRequired,
   getUser: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  isAuthenticated: !!state.user.token,
-  userDataFetched: !!state.user.id
+  isAuthenticated: isAuthenticatedSelector(state),
+  isUserDataFetched: isUserDataFetchedSelector(state)
 });
 
-export default connect(mapStateToProps, { getUser })(UserRoute);
+export default connect(mapStateToProps, { getUser: userDataRequested })(
+  UserRoute
+);

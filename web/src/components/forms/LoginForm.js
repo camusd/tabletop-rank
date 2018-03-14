@@ -11,8 +11,7 @@ class LoginForm extends Component {
       email: "",
       password: ""
     },
-    loading: false,
-    errors: {}
+    formErrors: {}
   };
 
   onChange = e =>
@@ -21,40 +20,39 @@ class LoginForm extends Component {
     });
 
   onSubmit = () => {
-    const errors = this.validate(this.state.data);
-    this.setState({ errors });
-    if (_.isEmpty(errors)) {
+    const { submit } = this.props;
+    const { data } = this.state;
+    const formErrors = this.validate(data);
+    this.setState({ formErrors });
+    if (_.isEmpty(formErrors)) {
       this.setState({ loading: true });
-      this.props
-        .submit(this.state.data)
-        .catch(err =>
-          this.setState({ errors: err.response.data, loading: false })
-        );
+      submit(data);
     }
   };
 
   validate = data => {
-    const errors = {};
+    const formErrors = {};
     if (!isEmail(data.email)) {
-      errors.email = "Invalid email";
+      formErrors.email = "Invalid email";
     }
     if (!data.password) {
-      errors.password = "Password is required";
+      formErrors.password = "Password is required";
     }
-    return errors;
+    return formErrors;
   };
 
   render() {
-    const { data, errors, loading } = this.state;
+    const { error, loading } = this.props;
+    const { data, formErrors } = this.state;
     return (
       <Form onSubmit={this.onSubmit} loading={loading}>
-        {errors.message && (
+        {error.message && (
           <Message negative>
             <Message.Header>Something went wrong</Message.Header>
-            <p>{errors.message}</p>
+            <p>{error.message}</p>
           </Message>
         )}
-        <Form.Field error={!!errors.email}>
+        <Form.Field error={!!formErrors.email}>
           <label htmlFor="email">
             Email
             <input
@@ -66,9 +64,9 @@ class LoginForm extends Component {
               onChange={this.onChange}
             />
           </label>
-          {errors.email && <InlineError text={errors.email} />}
+          {formErrors.email && <InlineError text={formErrors.email} />}
         </Form.Field>
-        <Form.Field error={!!errors.password}>
+        <Form.Field error={!!formErrors.password}>
           <label htmlFor="password">
             Password
             <input
@@ -79,7 +77,7 @@ class LoginForm extends Component {
               onChange={this.onChange}
             />
           </label>
-          {errors.password && <InlineError text={errors.password} />}
+          {formErrors.password && <InlineError text={formErrors.password} />}
         </Form.Field>
         <Button primary>Login</Button>
       </Form>
@@ -88,7 +86,21 @@ class LoginForm extends Component {
 }
 
 LoginForm.propTypes = {
-  submit: PropTypes.func.isRequired
+  submit: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.shape({
+    message: PropTypes.string,
+    subErrors: PropTypes.arrayOf(
+      PropTypes.shape({
+        obj: PropTypes.string.isRequired,
+        message: PropTypes.string.isRequired
+      })
+    )
+  })
+};
+
+LoginForm.defaultProps = {
+  error: {}
 };
 
 export default LoginForm;

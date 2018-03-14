@@ -1,23 +1,26 @@
 import {
-  USER_DATA_FETCHED,
-  TOKEN_STORED,
-  USER_LOGGED_IN,
-  USER_LOGGED_OUT,
-  USER_CREATED
+  USER_DATA_RETRIEVED,
+  USER_CREATED,
+  USER_DATA_RETRIEVAL_FAILED,
+  USER_CREATION_FAILED
 } from "../types";
 
-export default (state = {}, action = {}) => {
+export default (state = { data: {}, error: {} }, action = {}) => {
   switch (action.type) {
-    case TOKEN_STORED:
-      return { ...state, token: action.token };
-    case USER_LOGGED_IN:
-      return { ...state, ...action.user };
-    case USER_LOGGED_OUT:
-      return {};
-    case USER_DATA_FETCHED:
-      return { ...state, ...action.user };
+    case USER_DATA_RETRIEVED:
+      return { ...state, data: action.user };
+    case USER_DATA_RETRIEVAL_FAILED:
+      return {
+        ...state,
+        error: action.error
+      };
     case USER_CREATED:
-      return { ...state, ...action.user };
+      return { ...state, data: action.user };
+    case USER_CREATION_FAILED:
+      return {
+        ...state,
+        error: action.error
+      };
     default:
       return state;
   }
