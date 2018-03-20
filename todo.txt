@@ -1,0 +1,3 @@
+- Create Dockerfile for web
+  - Figure out how to handle create-react-api dev server vs nginx for prod
+- Create minikube deployment for web

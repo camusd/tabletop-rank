@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: tabletoprank
+spec:
+  type: NodePort
+  ports:
+    - port: 5432
+  selector:
+    app: tabletoprank
+    tier: database
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-fast
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstCustomer
+reclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim
+  labels:
+    app: tabletoprank
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: manual
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: tabletoprank
+spec:
+  selector:
+    matchLabels:
+      app: tabletoprank
+      tier: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: tabletoprank
+        tier: database
+    spec:
+      containers:
+      - image: postgres:latest
+        name: postgres
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+        ports:
+        - name: postgres
+          containerPort: 5432
+        volumeMounts:
+        - name: postgres-persistent-storage
+          mountPath: /var/lib/postgres/data
+      volumes:
+      - name: postgres-persistent-storage
+        persistentVolumeClaim:
