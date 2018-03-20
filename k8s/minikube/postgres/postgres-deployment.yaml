@@ -54,7 +54,7 @@ spec:
         tier: database
     spec:
       containers:
-      - image: postgres:latest
+      - image: postgres:alpine
         name: postgres
         env:
         - name: POSTGRES_PASSWORD
