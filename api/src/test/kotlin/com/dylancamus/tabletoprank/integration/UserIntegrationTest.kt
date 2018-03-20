@@ -16,8 +16,8 @@ import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.embedded.LocalServerPort
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
@@ -80,7 +80,7 @@ internal class UserIntegrationTest {
 
     @Test
     fun `'getUser' should format error if user doesn't exist`() {
-        userRepository.delete(users[0].id)
+        userRepository.deleteById(users[0].id)
         given().header(HttpHeaders.AUTHORIZATION, token)
                 .get("/api/user").then()
                 .statusCode(HttpStatus.NOT_FOUND.value())
@@ -136,7 +136,7 @@ internal class UserIntegrationTest {
 
     @Test
     fun `'updateUser' should format error if user doesn't exist`() {
-        userRepository.delete(users[0].id)
+        userRepository.deleteById(users[0].id)
         val dto = UpdateUserDto("apple", null, null, null, null)
         given().header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(ContentType.JSON).body(dto)

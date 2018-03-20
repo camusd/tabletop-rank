@@ -1,7 +1,7 @@
 package com.dylancamus.tabletoprank.domain.user
 
-import org.hibernate.validator.constraints.Email
 import javax.persistence.*
+import javax.validation.constraints.Email
 
 @Entity
 internal data class UserEntity(

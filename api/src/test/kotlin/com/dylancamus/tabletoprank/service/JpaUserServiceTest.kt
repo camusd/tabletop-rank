@@ -5,17 +5,21 @@ import com.dylancamus.tabletoprank.domain.user.UpdateUserDto
 import com.dylancamus.tabletoprank.domain.user.UserEntity
 import com.dylancamus.tabletoprank.repository.UserRepository
 import com.dylancamus.tabletoprank.service.user.JpaUserService
+import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.`is`
+import org.junit.Assert.assertThat
+import org.junit.Before
 import org.junit.Test
 
-import org.junit.Assert.*
-import org.junit.Before
 import org.junit.runner.RunWith
-import org.mockito.*
-import org.mockito.Matchers.any
-import org.mockito.Mockito.*
-import org.mockito.runners.MockitoJUnitRunner
+import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Captor
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
@@ -74,8 +78,8 @@ internal class JpaUserServiceTest {
         val expectedLastName = "mango"
         val expectedCreateUserDto = CreateUserDto(expectedEmail,
                 expectedUnEncryptedPassword, expectedFirstName, expectedLastName)
-        whenever(mockUserRepository.save(any(UserEntity::class.java))).thenAnswer({
-            it.getArgumentAt(0, UserEntity::class.java)
+        whenever(mockUserRepository.save<UserEntity>(any(UserEntity::class.java))).thenAnswer({
+            it.getArgument(0)
         })
         whenever(mockBCryptPasswordEncoder.encode(anyString())).thenReturn(expectedEncryptedPassword)
         val actualUserDto = subject.createUser(expectedCreateUserDto)
@@ -93,7 +97,7 @@ internal class JpaUserServiceTest {
                 "banana", "pear", "mango")
         whenever(mockUserRepository.findByEmail(expectedEmail)).thenReturn(expectedUserEntity)
         whenever(mockUserRepository.save(any(UserEntity::class.java))).thenAnswer({
-            it.getArgumentAt(0, UserEntity::class.java)
+            it.getArgument(0)
         })
         val actualUserDto = subject.updateUser(expectedUpdateUserDto)
         verify(mockUserRepository, times(1)).save(userEntityArgumentCaptor.capture())
@@ -102,7 +106,6 @@ internal class JpaUserServiceTest {
 
     @Test(expected = EntityNotFoundException::class)
     fun `'updateUser' should throw exception if repository does not contain entity with given id`() {
-        whenever(mockUserRepository.findOne(anyLong())).thenReturn(null)
         subject.updateUser(UpdateUserDto(null,
                 null, "apple", "banana", null))
     }
